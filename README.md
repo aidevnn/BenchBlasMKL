@@ -5,36 +5,35 @@ Assuming libblas.so and libmkl_rt.so are avalaible from ldconfig.
 
 ### Output
 ```
+DotNet Matrix Multiplication float (60 40) x (40 80) = (60 80) Time = 2 ms
+DotNet Matrix Multiplication float (120 80) x (80 160) = (120 160) Time = 12 ms
+DotNet Matrix Multiplication float (240 160) x (160 320) = (240 320) Time = 81 ms
+DotNet Matrix Multiplication float (480 320) x (320 640) = (480 640) Time = 446 ms
 
-DotNetMatrixMultiplication float (60 40) x (40 80) = (60 80) Time = 1 ms
-DotNetMatrixMultiplication float (120 80) x (80 160) = (120 160) Time = 10 ms
-DotNetMatrixMultiplication float (240 160) x (160 320) = (240 320) Time = 83 ms
-DotNetMatrixMultiplication float (480 320) x (320 640) = (480 640) Time = 486 ms
+Netlib BLAS SGEMM float (480 320) x (320 640) = (480 640) Time = 1 ms
+Netlib BLAS SGEMM float (960 640) x (640 1280) = (960 1280) Time = 11 ms
+Netlib BLAS SGEMM float (1920 1280) x (1280 2560) = (1920 2560) Time = 108 ms
+Netlib BLAS SGEMM float (3840 2560) x (2560 5120) = (3840 5120) Time = 919 ms
 
-BlasMatrixMultiplication   float (480 320) x (320 640) = (480 640) Time = 8 ms
-BlasMatrixMultiplication   float (960 640) x (640 1280) = (960 1280) Time = 12 ms
-BlasMatrixMultiplication   float (1920 1280) x (1280 2560) = (1920 2560) Time = 107 ms
-BlasMatrixMultiplication   float (3840 2560) x (2560 5120) = (3840 5120) Time = 859 ms
+Intel MKL BLAS SGEMM float (480 320) x (320 640) = (480 640) Time = 1 ms
+Intel MKL BLAS SGEMM float (960 640) x (640 1280) = (960 1280) Time = 10 ms
+Intel MKL BLAS SGEMM float (1920 1280) x (1280 2560) = (1920 2560) Time = 117 ms
+Intel MKL BLAS SGEMM float (3840 2560) x (2560 5120) = (3840 5120) Time = 665 ms
 
-MklMatrixMultiplication    float (480 320) x (320 640) = (480 640) Time = 8 ms
-MklMatrixMultiplication    float (960 640) x (640 1280) = (960 1280) Time = 10 ms
-MklMatrixMultiplication    float (1920 1280) x (1280 2560) = (1920 2560) Time = 116 ms
-MklMatrixMultiplication    float (3840 2560) x (2560 5120) = (3840 5120) Time = 626 ms
+DotNet Matrix Multiplication double (60 40) x (40 80) = (60 80) Time = 0 ms
+DotNet Matrix Multiplication double (120 80) x (80 160) = (120 160) Time = 8 ms
+DotNet Matrix Multiplication double (240 160) x (160 320) = (240 320) Time = 56 ms
+DotNet Matrix Multiplication double (480 320) x (320 640) = (480 640) Time = 541 ms
 
-DotNetMatrixMultiplication double (60 40) x (40 80) = (60 80) Time = 0 ms
-DotNetMatrixMultiplication double (120 80) x (80 160) = (120 160) Time = 8 ms
-DotNetMatrixMultiplication double (240 160) x (160 320) = (240 320) Time = 58 ms
-DotNetMatrixMultiplication double (480 320) x (320 640) = (480 640) Time = 539 ms
+Netlib BLAS DGEMM double (480 320) x (320 640) = (480 640) Time = 3 ms
+Netlib BLAS DGEMM double (960 640) x (640 1280) = (960 1280) Time = 24 ms
+Netlib BLAS DGEMM double (1920 1280) x (1280 2560) = (1920 2560) Time = 212 ms
+Netlib BLAS DGEMM double (3840 2560) x (2560 5120) = (3840 5120) Time = 1553 ms
 
-BlasMatrixMultiplication   double (480 320) x (320 640) = (480 640) Time = 4 ms
-BlasMatrixMultiplication   double (960 640) x (640 1280) = (960 1280) Time = 24 ms
-BlasMatrixMultiplication   double (1920 1280) x (1280 2560) = (1920 2560) Time = 227 ms
-BlasMatrixMultiplication   double (3840 2560) x (2560 5120) = (3840 5120) Time = 1582 ms
-
-MklMatrixMultiplication    double (480 320) x (320 640) = (480 640) Time = 11 ms
-MklMatrixMultiplication    double (960 640) x (640 1280) = (960 1280) Time = 20 ms
-MklMatrixMultiplication    double (1920 1280) x (1280 2560) = (1920 2560) Time = 174 ms
-MklMatrixMultiplication    double (3840 2560) x (2560 5120) = (3840 5120) Time = 1330 ms
+Intel MKL BLAS DGEMM double (480 320) x (320 640) = (480 640) Time = 3 ms
+Intel MKL BLAS DGEMM double (960 640) x (640 1280) = (960 1280) Time = 28 ms
+Intel MKL BLAS DGEMM double (1920 1280) x (1280 2560) = (1920 2560) Time = 158 ms
+Intel MKL BLAS DGEMM double (3840 2560) x (2560 5120) = (3840 5120) Time = 1292 ms
 
 
 ```

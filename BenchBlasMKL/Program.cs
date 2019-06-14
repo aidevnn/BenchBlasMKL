@@ -114,28 +114,12 @@ namespace BenchBlasMKL
             }
         }
 
-        static void DisplayMatrix(int m, int n, float[] M, string info = "M")
+        static void DisplayMatrix<T>(int m, int n, T[] M, string info = "M")
         {
             if (m * n != M.Length)
                 throw new ArgumentException();
 
-            Console.WriteLine($"MatrixFloat {info} [{m}x{n}]");
-            for (int i = 0; i < m; ++i)
-            {
-                for (int j = 0; j < n; ++j)
-                {
-                    Console.Write($"{M[i * n + j],8:F2}");
-                }
-                Console.WriteLine();
-            }
-        }
-
-        static void DisplayMatrix(int m, int n, double[] M, string info = "M")
-        {
-            if (m * n != M.Length)
-                throw new ArgumentException();
-
-            Console.WriteLine($"MatrixDouble {info} [{m}x{n}]");
+            Console.WriteLine($"Matrix{typeof(T).Name} {info} ({m} {n})");
             for (int i = 0; i < m; ++i)
             {
                 for (int j = 0; j < n; ++j)
@@ -147,189 +131,122 @@ namespace BenchBlasMKL
         }
 
         static Random random = new Random();
-        static void TestDotNetfloat()
-        {
-            int m = 2, n = 2, k = 2;
-            float[] A = Enumerable.Range(1, 4).Select(i => (float)i).ToArray();
-            float[] B = Enumerable.Range(1, 4).Select(i => -(float)i).ToArray();
-            float[] C = new float[4];
 
-            Console.WriteLine("DotNetMatrixMultiplication");
-            DotNetMatrixMultiplication(m, n, k, A, B, C);
+        static void TestFloat(int m = 2, int n = 2, int k = 2)
+        {
+            float[] A = Enumerable.Range(1, m * k).Select(i => (float)random.Next(-9, 10)).ToArray();
+            float[] B = Enumerable.Range(1, k * n).Select(i => -(float)random.Next(-9, 10)).ToArray();
+            float[] C0 = new float[m * n];
+            float[] C1 = new float[m * n];
+            float[] C2 = new float[m * n];
+
+            DotNetMatrixMultiplication(m, n, k, A, B, C0);
+            MklMatrixMultiplication(m, n, k, A, B, C1);
+            BlasMatrixMultiplication(m, n, k, A, B, C2);
+
+            Console.WriteLine("Matrix Multiplication Float");
             DisplayMatrix(m, k, A, "A");
             DisplayMatrix(k, n, B, "B");
-            DisplayMatrix(m, n, C, "C = A x B");
+            DisplayMatrix(m, n, C0, ".NET C = A x B");
+            DisplayMatrix(m, n, C1, "MKL BLAS  C = A x B");
+            DisplayMatrix(m, n, C2, "Netlib BLAS C = A x B");
+
             Console.WriteLine();
         }
 
-        static void TestDotNetdouble()
+        static void TestDouble(int m = 2, int n = 2, int k = 2)
         {
-            int m = 2, n = 2, k = 2;
-            double[] A = Enumerable.Range(1, 4).Select(i => (double)i).ToArray();
-            double[] B = Enumerable.Range(1, 4).Select(i => -(double)i).ToArray();
-            double[] C = new double[4];
+            double[] A = Enumerable.Range(1, m * k).Select(i => (double)random.Next(-9, 10)).ToArray();
+            double[] B = Enumerable.Range(1, k * n).Select(i => -(double)random.Next(-9, 10)).ToArray();
+            double[] C0 = new double[m * n];
+            double[] C1 = new double[m * n];
+            double[] C2 = new double[m * n];
 
-            Console.WriteLine("DotNetMatrixMultiplication");
-            DotNetMatrixMultiplication(m, n, k, A, B, C);
+            DotNetMatrixMultiplication(m, n, k, A, B, C0);
+            MklMatrixMultiplication(m, n, k, A, B, C1);
+            BlasMatrixMultiplication(m, n, k, A, B, C2);
+
+            Console.WriteLine("Matrix Multiplication Double");
             DisplayMatrix(m, k, A, "A");
             DisplayMatrix(k, n, B, "B");
-            DisplayMatrix(m, n, C, "C = A x B");
+            DisplayMatrix(m, n, C0, ".NET C = A x B");
+            DisplayMatrix(m, n, C1, "MKL BLAS  C = A x B");
+            DisplayMatrix(m, n, C2, "Netlib BLAS C = A x B");
+
             Console.WriteLine();
         }
 
-        static void TestMKLfloat()
+        static (T[],T[],T[]) TupleMatrix<T>(int m, int n, int k)
         {
-            int m = 2, n = 2, k = 2;
-            float[] A = Enumerable.Range(1, 4).Select(i => (float)i).ToArray();
-            float[] B = Enumerable.Range(1, 4).Select(i => -(float)i).ToArray();
-            float[] C = new float[4];
+            if (m <= 0 || n <= 0 || k <= 0)
+                throw new ArgumentException();
 
-            Console.WriteLine("MklMatrixMultiplication");
-            MklMatrixMultiplication(m, n, k, A, B, C);
-            DisplayMatrix(m, k, A, "A");
-            DisplayMatrix(k, n, B, "B");
-            DisplayMatrix(m, n, C, "C = A x B");
-            Console.WriteLine();
-        }
+            T func(int i) => (T)Convert.ChangeType((random.NextDouble() * 2) - 1, typeof(T));
+            T[] A = Enumerable.Range(0, m * k).Select(func).ToArray();
+            T[] B = Enumerable.Range(0, k * n).Select(func).ToArray();
+            T[] C = new T[m * n];
 
-        static void TestMKLdouble()
-        {
-            int m = 2, n = 2, k = 2;
-            double[] A = Enumerable.Range(1, 4).Select(i => (double)i).ToArray();
-            double[] B = Enumerable.Range(1, 4).Select(i => -(double)i).ToArray();
-            double[] C = new double[4];
-
-            Console.WriteLine("MklMatrixMultiplication");
-            MklMatrixMultiplication(m, n, k, A, B, C);
-            DisplayMatrix(m, k, A, "A");
-            DisplayMatrix(k, n, B, "B");
-            DisplayMatrix(m, n, C, "C = A x B");
-            Console.WriteLine();
-        }
-
-        static void TestBLASfloat()
-        {
-            int m = 2, n = 2, k = 2;
-            float[] A = Enumerable.Range(1, 4).Select(i => (float)i).ToArray();
-            float[] B = Enumerable.Range(1, 4).Select(i => -(float)i).ToArray();
-            float[] C = new float[4];
-
-            Console.WriteLine("BlasMatrixMultiplication");
-            BlasMatrixMultiplication(m, n, k, A, B, C);
-            DisplayMatrix(m, k, A, "A");
-            DisplayMatrix(k, n, B, "B");
-            DisplayMatrix(m, n, C, "C = A x B");
-            Console.WriteLine();
-        }
-
-        static void TestBLASdouble()
-        {
-            int m = 2, n = 2, k = 2;
-            double[] A = Enumerable.Range(1, 4).Select(i => (double)i).ToArray();
-            double[] B = Enumerable.Range(1, 4).Select(i => -(double)i).ToArray();
-            double[] C = new double[4];
-
-            Console.WriteLine("BlasMatrixMultiplication");
-            BlasMatrixMultiplication(m, n, k, A, B, C);
-            DisplayMatrix(m, k, A, "A");
-            DisplayMatrix(k, n, B, "B");
-            DisplayMatrix(m, n, C, "C = A x B");
-            Console.WriteLine();
+            return (A, B, C);
         }
 
         static void BenchDotNetfloat(int m, int n, int k)
         {
-            if (m <= 0 || n <= 0 || k <= 0)
-                throw new ArgumentException();
-
-            float[] A = Enumerable.Range(0, m * k).Select(i => (float)random.NextDouble() * 2 - 1).ToArray();
-            float[] B = Enumerable.Range(0, k * n).Select(i => (float)random.NextDouble() * 2 - 1).ToArray();
-            float[] C = new float[m * n];
+            (var A, var B, var C) = TupleMatrix<float>(m, n, k);
 
             var sw0 = Stopwatch.StartNew();
             DotNetMatrixMultiplication(m, n, k, A, B, C);
-            Console.WriteLine($"DotNetMatrixMultiplication float ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
+            Console.WriteLine($"DotNet Matrix Multiplication float ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
         }
 
         static void BenchDotNetdouble(int m, int n, int k)
         {
-            if (m <= 0 || n <= 0 || k <= 0)
-                throw new ArgumentException();
-
-            double[] A = Enumerable.Range(0, m * k).Select(i => random.NextDouble() * 2 - 1).ToArray();
-            double[] B = Enumerable.Range(0, k * n).Select(i => random.NextDouble() * 2 - 1).ToArray();
-            double[] C = new double[m * n];
+            (var A, var B, var C) = TupleMatrix<double>(m, n, k);
 
             var sw0 = Stopwatch.StartNew();
             DotNetMatrixMultiplication(m, n, k, A, B, C);
-            Console.WriteLine($"DotNetMatrixMultiplication double ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
+            Console.WriteLine($"DotNet Matrix Multiplication double ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
         }
 
         static void BenchBLASfloat(int m, int n, int k)
         {
-            if (m <= 0 || n <= 0 || k <= 0)
-                throw new ArgumentException();
-
-            float[] A = Enumerable.Range(0, m * k).Select(i => (float)random.NextDouble() * 2 - 1).ToArray();
-            float[] B = Enumerable.Range(0, k * n).Select(i => (float)random.NextDouble() * 2 - 1).ToArray();
-            float[] C = new float[m * n];
+            (var A, var B, var C) = TupleMatrix<float>(m, n, k);
 
             var sw0 = Stopwatch.StartNew();
             BlasMatrixMultiplication(m, n, k, A, B, C);
-            Console.WriteLine($"BlasMatrixMultiplication   float ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Netlib BLAS SGEMM float ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
         }
 
         static void BenchBLASdouble(int m, int n, int k)
         {
-            if (m <= 0 || n <= 0 || k <= 0)
-                throw new ArgumentException();
-
-            double[] A = Enumerable.Range(0, m * k).Select(i => random.NextDouble() * 2 - 1).ToArray();
-            double[] B = Enumerable.Range(0, k * n).Select(i => random.NextDouble() * 2 - 1).ToArray();
-            double[] C = new double[m * n];
+            (var A, var B, var C) = TupleMatrix<double>(m, n, k);
 
             var sw0 = Stopwatch.StartNew();
             BlasMatrixMultiplication(m, n, k, A, B, C);
-            Console.WriteLine($"BlasMatrixMultiplication   double ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Netlib BLAS DGEMM double ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
         }
 
         static void BenchMKLfloat(int m, int n, int k)
         {
-            if (m <= 0 || n <= 0 || k <= 0)
-                throw new ArgumentException();
-
-            float[] A = Enumerable.Range(0, m * k).Select(i => (float)random.NextDouble() * 2 - 1).ToArray();
-            float[] B = Enumerable.Range(0, k * n).Select(i => (float)random.NextDouble() * 2 - 1).ToArray();
-            float[] C = new float[m * n];
+            (var A, var B, var C) = TupleMatrix<float>(m, n, k);
 
             var sw0 = Stopwatch.StartNew();
             MklMatrixMultiplication(m, n, k, A, B, C);
-            Console.WriteLine($"MklMatrixMultiplication    float ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Intel MKL BLAS SGEMM float ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
         }
 
         static void BenchMKLdouble(int m, int n, int k)
         {
-            if (m <= 0 || n <= 0 || k <= 0)
-                throw new ArgumentException();
-
-            double[] A = Enumerable.Range(0, m * k).Select(i => random.NextDouble() * 2 - 1).ToArray();
-            double[] B = Enumerable.Range(0, k * n).Select(i => random.NextDouble() * 2 - 1).ToArray();
-            double[] C = new double[m * n];
+            (var A, var B, var C) = TupleMatrix<double>(m, n, k);
 
             var sw0 = Stopwatch.StartNew();
             MklMatrixMultiplication(m, n, k, A, B, C);
-            Console.WriteLine($"MklMatrixMultiplication    double ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Intel MKL BLAS DGEMM double ({m} {k}) x ({k} {n}) = ({m} {n}) Time = {sw0.ElapsedMilliseconds} ms");
         }
 
         public static void Main(string[] args)
         {
-            TestDotNetdouble();
-            TestBLASdouble();
-            TestMKLdouble();
-
-            TestDotNetfloat();
-            TestBLASfloat();
-            TestMKLfloat();
+            TestFloat();
+            TestDouble(3,2,4);
 
             int N = 4;
             int c = 2;
@@ -362,6 +279,11 @@ namespace BenchBlasMKL
                 BenchMKLdouble(30 * c, 40 * c, 20 * c);
             Console.WriteLine();
 
+            //long d = 3840 * 5120;
+            //var lt = Enumerable.Range(0, (int)d).Select(i => (long)i).ToArray(); // Check big size array
+            //var sum0 = d * (d - 1) / 2;
+            //var sum1 = lt.Sum();
+            //Console.WriteLine($"Array Int Sum. Length:{d} Formula:{sum0} Sum:{sum1} Diff:{sum0 - sum1}");
         }
     }
 }
