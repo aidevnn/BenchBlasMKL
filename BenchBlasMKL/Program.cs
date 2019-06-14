@@ -207,10 +207,6 @@ namespace BenchBlasMKL
             TestMKL();
             TestBLAS();
 
-            Bench1(300, 400, 200);
-            Bench1(4, 5, 3, true);
-            Console.WriteLine();
-
             int N = 4;
             int c = 2;
             for (int k = 0; k < N; ++k)
@@ -218,6 +214,7 @@ namespace BenchBlasMKL
                 BenchDotNet(30 * c, 40 * c, 20 * c);
                 c *= 2;
             }
+            Console.WriteLine();
 
             c = 16;
             for (int k = 0; k < N; ++k)
@@ -225,6 +222,7 @@ namespace BenchBlasMKL
                 BenchBLAS(30 * c, 40 * c, 20 * c);
                 c *= 2;
             }
+            Console.WriteLine();
 
             c = 16;
             for (int k = 0; k < N; ++k)
