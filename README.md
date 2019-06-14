@@ -1,5 +1,5 @@
 # BenchBlasMKL
-Benchmark Blas matrix multiplication
+Benchmark Blas matrix multiplication with monodevelop. CPU i7-7500U-2.90Ghz
 
 Assuming libblas.so and libmkl_rt.so are avalaible from ldconfig.
 
